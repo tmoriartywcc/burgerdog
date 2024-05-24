@@ -114,19 +114,61 @@ while running:
             running = False
 
     #Get a list of all keys currently being pressed down
+    #We want continous movement so this will be outside of the game loop
     keys = pygame.key.get_pressed()   
     
 
-    #Move the dragon continously
-    #if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and dragon_rect.left > 0:
-    #    dragon_rect.x -= PLAYER_VELOCITY
-    #if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and dragon_rect.right < WINDOW_WIDTH:
-    #    dragon_rect.x += PLAYER_VELOCITY
-    #if keys[pygame.K_UP] and player_rect.top > 64:
-    #    player_rect.y -= PLAYER_VELOCITY
-    #if keys[pygame.K_DOWN] and player_rect.bottom < WINDOW_HEIGHT:
-    #    player_rect.y += PLAYER_VELOCITY
+    #Move the dog continously
+    if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_rect.left > 0:
+        player_rect.x -= player_velocity
+        player_image = player_image_left
+    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_rect.right < WINDOW_WIDTH:
+        player_rect.x += player_velocity
+        player_image = player_image_right
+    if keys[pygame.K_UP] and player_rect.top > 100:
+        player_rect.y -= player_velocity
+    if keys[pygame.K_DOWN] and player_rect.bottom < WINDOW_HEIGHT:
+        player_rect.y += player_velocity
 
+    if keys[pygame.K_SPACE] and boost_level > 0:
+        player_velocity = PLAYER_BOOST_VELOCITY
+        boost_level -= 1
+    else:
+        player_velocity = PLAYER_NORMAL_VELOCITY
+
+
+    #Move the burger and update burger points
+    burger_rect.y += burger_velocity
+    burger_points = int(burger_velocity * (WINDOW_HEIGHT - burger_rect.y + 100))
+        
+    #player missed the burger
+    if burger_rect.y > WINDOW_HEIGHT:
+        player_lives -= 1
+        miss_sound.play()
+
+        burger_rect.topleft = (random.randint(0, WINDOW_WIDTH-32), -BUFFER_DISTANCE)
+        burger_velocity = STARTING_BURGER_VELOCITY
+
+        player_rect.centerx = WINDOW_WIDTH//2
+        player_rect.bottom = WINDOW_HEIGHT
+
+        boost_level = STARTING_BOOST_LEVEL
+
+    #Check for collisions
+    if player_rect.colliderect(burger_rect):
+        score += burger_points
+        burgers_eaten += 1
+        burger_rect.topleft = (random.randint(0, WINDOW_WIDTH-32), -BUFFER_DISTANCE)
+        bark_sound.play()
+        burger_velocity += BURGER_ACCELERATION
+
+        boost_level += 25
+
+        if boost_level > STARTING_BOOST_LEVEL:
+            boost_level = STARTING_BOOST_LEVEL
+
+
+    
     #Move the coin
     #if coin_rect.x < 0:
         #player missed coin
