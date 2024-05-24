@@ -162,7 +162,7 @@ while running:
         bark_sound.play()
         burger_velocity += BURGER_ACCELERATION
 
-        boost_level += 25
+        boost_level += 50
 
         if boost_level > STARTING_BOOST_LEVEL:
             boost_level = STARTING_BOOST_LEVEL
