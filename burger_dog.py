@@ -21,7 +21,7 @@ PLAYER_NORMAL_VELOCITY = 5
 PLAYER_BOOST_VELOCITY = 10
 STARTING_BOOST_LEVEL = 100
 STARTING_BURGER_VELOCITY = 3
-BURGER_ACCELERATION = .25
+BURGER_ACCELERATION = .5
 BUFFER_DISTANCE = 100
 
 score = 0
@@ -162,74 +162,60 @@ while running:
         bark_sound.play()
         burger_velocity += BURGER_ACCELERATION
 
-        boost_level += 50
+        boost_level += 25
 
         if boost_level > STARTING_BOOST_LEVEL:
             boost_level = STARTING_BOOST_LEVEL
 
 
-    
-    #Move the coin
-    #if coin_rect.x < 0:
-        #player missed coin
-    #    player_lives -= 1
-    #    miss_sound.play()
-        #place coin off the end of the screen again
-    #    coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
-    #    coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
-    #else:
-    #    coin_rect.x -= coin_velocity
-        #move hte coint
-    #Check for collison between player and coin
-    #if player_rect.colliderect(coin_rect):
-    #    score += 1
-    #    coin_sound.play()
-    #    coin_velocity += COIN_ACCELERATION
-    #    coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
-    #    coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
 
     #update HUD
-    #score_text = font.render('Score: ' + str(score), True, GREEN, DARKGREEN)
-    #lives_text = font.render('Lives: ' + str(player_lives), True, GREEN, DARKGREEN)
+    points_text = font.render('Burger Points: ' + str(burger_points), True, ORANGE)
+    score_text = font.render('Score: ' + str(score), True, ORANGE)
+    eaten_text = font.render('Burgers Eaten: ' + str(burgers_eaten), True, ORANGE)
+    lives_text = font.render('Lives: ' + str(player_lives), True, ORANGE)
+    boost_text = font.render('Boost: ' + str(boost_level), True, ORANGE)
 
 
-    #if player_lives == 0:
-    #    display_surface.blit(game_over_text, game_over_rect)
-    #    display_surface.blit(continue_text, continue_rect)
-    #    pygame.display.update()
+    if player_lives == 0:
+        game_over_text = font.render('FINAL SCORE: ' + str(score), True, ORANGE)
+        display_surface.blit(game_over_text, game_over_rect)
+        display_surface.blit(continue_text, continue_rect)
+        pygame.display.update()
+        pygame.mixer.pause()
 
-        #Pause game until player presses a key, then reset
-    #    pygame.mixer.music.stop()
-    #    is_paused = True
-    #    while is_paused:
-    #        for event in pygame.event.get():
-                #player wants to play again
-    #            if event.type == pygame.KEYDOWN:
-    #                score = 0
-    #                player_lives = PLAYER_STARTING_LIVES
-    #                player_rect.y = WINDOW_HEIGHT // 2
-    #                coin_velocity = COIN_STARTING_VELOCITY
-    #                pygame.mixer.music.play(-1, 0.0)
-    #                is_paused = False
-                #player wants to quit
-    #            if event.type == pygame.QUIT:
-    #                is_paused = False
-    #                running = False
+        pygame.mixer.music.stop()
+        is_paused = True
+        while is_paused:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    score = 0
+                    burgers_eaten = 0
 
+                    player_lives = PLAYER_STARTING_LIVES
+                    player_velocity = PLAYER_NORMAL_VELOCITY
+
+                    boost_level = STARTING_BOOST_LEVEL
+                    burger_velocity = STARTING_BURGER_VELOCITY
+
+                    pygame.mixer.music.play()
+                    is_paused = False
+                
+                if event.type == pygame.QUIT:
+                    running = False
+                    is_paused = False
 
     #Fill the display surface to cover old images
     display_surface.fill(BLACK)
 
-    #Draw rectangles to represent rectangles
-    #pygame.draw.rect(display_surface, (0,255,0), dragon_rect, 1)
-    #pygame.draw.rect(display_surface, (255,0,0), coin_rect, 1)
-    
     #Blit the HUD to the screen
     display_surface.blit(points_text, points_rect)
     display_surface.blit(score_text, score_rect)
     display_surface.blit(title_text, title_rect)
     display_surface.blit(boost_text, boost_rect)
     display_surface.blit(lives_text, lives_rect)
+    display_surface.blit(eaten_text, eaten_rect)
+
     pygame.draw.line(display_surface, WHITE, (0,100), (WINDOW_WIDTH, 100), 3)
 
     
